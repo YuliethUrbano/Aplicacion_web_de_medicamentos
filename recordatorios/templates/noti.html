@@ -1,0 +1,57 @@
+<meta http-equiv="refresh" content="60">
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0 text-center">Centro de Notificaciones</h4>
+                </div>
+                <div class="card-body">
+                    {% if notificaciones %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered text-center align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Medicamento</th>
+                                        <th>Hora Programada</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for notificacion in notificaciones %}
+                                    <tr>
+                                        <td>{{ notificacion.toma.medicamento.nombre_Medicamento }}</td>
+                                        <td>{{ notificacion.hora_programada|time:"h:i A" }}</td>
+                                        <td>
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <form action="{% url 'confirmar_toma' notificacion.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-sm btn-primary" type="submit">
+                                                        ✅ Confirmar
+                                                    </button>
+                                                </form>
+                                                <form action="{% url 'retrasar_toma' notificacion.id %}" method="post">
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-sm btn-danger" type="submit">
+                                                        ⏳ Retrasar 30 min
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">No hay notificaciones pendientes.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

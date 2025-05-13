@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recordatorio de Medicamentos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    
+    <style>
+        /* Estilos personalizados */
+        .navbar-top {
+            background-color: #003f8a; /* Azul oscuro */
+            padding: 10px 0;
+        }
+        .navbar-top .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+        .navbar-bottom {
+            background-color: #80caff; /* Azul claro */
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 945px; /* Ajustar ancho */
+            margin: auto; /* Centrarlo */
+            margin-top: -10px; /* Superponerlo ligeramente */
+        }
+        .navbar-bottom .nav-link {
+            color: black !important;
+            font-weight: bold;
+            padding: 10px 15px; /* Espaciado entre elementos */
+            white-space: nowrap; /* Evita que los textos se dividan en dos líneas */
+        }
+        .navbar-bottom .nav-link:hover {
+            background-color: #62b3f5;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        function mostrarNotificacion(titulo, mensaje) {
+            if (!("Notification" in window)) {
+                alert("Las notificaciones no están soportadas en este navegador.");
+                return;
+            }
+            if (Notification.permission === "granted") {
+                new Notification(titulo, { body: mensaje });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(titulo, { body: mensaje });
+                    }
+                });
+            }
+        }
+    
+        function verificarNotificaciones() {
+            fetch("/notificaciones/")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.notificaciones) {
+                        data.notificaciones.forEach(notificacion => {
+                            mostrarNotificacion("Recordatorio de Medicamento", notificacion.mensaje);
+                        });
+                    }
+                })
+                .catch(error => console.error("Error obteniendo notificaciones:", error));
+        }
+    
+        // Llamar a la función cada 1 minuto
+        setInterval(verificarNotificaciones, 60000);
+    </script>
+
+    <!-- Navbar Superior (Título) -->
+    <nav class="navbar navbar-expand-lg navbar-top">
+        <div class="container d-flex justify-content-center">
+            <a class="navbar-brand text-center w-100" href="#">RECORDATORIO DE MEDICAMENTOS</a>
+        </div>
+    </nav>
+    <br><br>
+
+    <!-- Navbar Inferior (Menú de navegación) -->
+    <nav class="navbar navbar-expand-lg navbar-bottom">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav d-flex justify-content-around w-100">
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/homelogin">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'medicamentos' %}">Medicamentos</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'medicamentos_completed' %}">Medicamentos Terminados</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/historial">Historial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/noti">Centro de notificaciones</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/logout">Cerrar sesión</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/signup">Registro</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="/signin">Iniciar sesión</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mensajes de validación -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

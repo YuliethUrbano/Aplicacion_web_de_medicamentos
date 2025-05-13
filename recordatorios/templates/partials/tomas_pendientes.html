@@ -1,0 +1,5 @@
+{% for toma in tomas_pendientes %}
+    <div class="toma">
+        <p>{{ toma.medicamento.nombre }} - {{ toma.hora }}</p>
+    </div>
+{% endfor %}

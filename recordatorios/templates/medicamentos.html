@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">Mis Medicamentos</h3>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                        <div class="text-end mb-3">
+                            <a href="/tasks/create/" class="btn btn-success">
+                                ➕ Crear Medicamento
+                            </a>
+                        </div>
+
+                        {% if tasks %}
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                {% for task in tasks %}
+                                    <div class="col">
+                                        <a href="{% url 'task_detail' task.id %}" class="text-decoration-none text-dark">
+                                            <div class="card h-100 shadow-sm">
+                                                <div class="card-body">
+                                                    <h5 class="card-title fw-bold">{{ task.nombre_Medicamento }}</h5>
+                                                    <p class="card-text mb-1"><strong>Presentación:</strong> {{ task.presentacion }}</p>
+                                                    <p class="card-text mb-1"><strong>Frecuencia:</strong> Cada {{ task.frecuencia }} horas</p>
+                                                    <p class="card-text text-muted">{{ task.datecompleted|date:'M j, Y - h:i A' }}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-center text-muted">No tienes medicamentos registrados aún.</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-center text-muted">Inicia sesión para ver tus medicamentos.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

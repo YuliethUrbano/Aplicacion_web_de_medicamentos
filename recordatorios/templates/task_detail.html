@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentForm = null;
+        const confirmBtn = document.getElementById('confirmBtn');
+        const confirmModal = document.getElementById('confirmModal');
+
+        function openConfirmModal(formId, message) {
+            currentForm = document.getElementById(formId);  // Guarda el formulario actual
+            document.getElementById('confirmMessage').innerText = message;  // Cambia el mensaje del modal
+            
+            // Asegura que el modal se abra correctamente
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(confirmModal);
+            modalInstance.show();
+        }
+
+        confirmBtn.addEventListener('click', function () {
+            if (currentForm) {
+                currentForm.submit();  // Envía el formulario
+            }
+            
+            // Cierra el modal correctamente
+            const modalInstance = bootstrap.Modal.getInstance(confirmModal);
+            modalInstance.hide();
+        });
+
+        // Hacer que la función esté disponible globalmente
+        window.openConfirmModal = openConfirmModal;
+    });
+</script>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">¿Estás seguro?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>  
+
+<main class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="text-secondary text-center">Detalle de la tarea {{ task_id }}</h1>
+                </div>
+                {{ error }} 
+                <div class="card card-body">
+                    <!-- Formulario para actualizar -->
+                    <form id="updateForm" method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="button" class="btn btn-primary" onclick="openConfirmModal('updateForm', '¿Estás seguro de que deseas actualizar este medicamento?')">
+                            Actualizar
+                        </button>
+                    </form>
+
+                    <br>
+
+                    <!-- Formulario para completar tarea -->
+                    <form id="completeForm" action="{% url 'complete_task' task.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-success" onclick="openConfirmModal('completeForm', '¿Marcar este medicamento como terminado?')">
+                            Medicamento terminado
+                        </button>
+                    </form>
+
+                    <br>
+
+                    <!-- Formulario para eliminar tarea -->
+                    <form id="deleteForm" action="{% url 'delete_task' task.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-danger" onclick="openConfirmModal('deleteForm', '¿Seguro que deseas eliminar este medicamento? Esta acción no se puede deshacer.')">
+                            Eliminar medicamento
+                        </button>
+                    </form>
+                </div>
+            </div>  
+        </div>
+    </div>
+</main>
+
+{% endblock %}

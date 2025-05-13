@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<main class="container mt-5">
+    <div class="row justify-content-center align-items-center">
+        <!-- Columna izquierda: Formulario -->
+        <div class="col-md-5">
+            <form action="/signup/" method="POST" class="card card-body">
+                <h1 class="text-center">Regístrate</h1>
+                
+                {{ error }}
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Usuario" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="text" name="first_name" id="first_name" class="form-control" placeholder="Nombre" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Apellido" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="email" name="email" id="email" class="form-control" placeholder="Correo" required>
+                </div>
+                
+                <div class="mb-3">
+                    <input type="password" name="password1" id="password1" class="form-control" placeholder="Contraseña" required>
+                </div>
+
+                <div class="mb-3">
+                    <input type="password" name="password2" id="password2" class="form-control" placeholder="Confirma tu Contraseña" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="role" class="form-label">Selecciona tu rol:</label>
+                    <select name="role" id="role" class="form-control" required>
+                        <option value="paciente">Paciente</option>
+                        <option value="cuidador">Cuidador</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary w-100">
+                    Registrarse
+                </button>
+            </form>
+        </div>
+
+        <!-- Columna derecha: Imagen -->
+        <div class="col-md-6 text-center">
+            <img src="{% static 'img/imagen-inicio.png' %}" alt="Registro de usuario" class="img-fluid" width="480">
+        </div>
+    </div>
+</main>
+{% endblock %}

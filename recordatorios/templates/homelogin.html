@@ -1,0 +1,90 @@
+<meta http-equiv="refresh" content="60">
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+<div class="container mt-5">
+    <div class="row align-items-center">
+        <!-- Imagen izquierda -->
+        <div class="col-md-3 text-center">
+            <img src="{% static 'img/pildora.png' %}" alt="Pastilla feliz" class="img-fluid mb-4" width="200">
+        </div>
+
+        <!-- Contenido central -->
+        <div class="col-md-6">
+            <!-- Tomas Pendientes -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Tomas Pendientes</h4>
+                </div>
+                <div class="card-body">
+                    {% if tomas_pendientes %}
+                        <ul class="list-group">
+                            {% for toma in tomas_pendientes %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        ⏰ {{ toma.hora|time:"h:i A" }} - 💊 {{ toma.medicamento }}
+                                    </div>
+                                    <form action="{% url 'marcar_toma' toma.id %}" method="POST" class="m-0">
+                                        {% csrf_token %}
+                                        <button class="btn btn-success btn-sm" type="submit">✔ Tomada</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center text-muted">No hay tomas pendientes.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tomas Omitidas -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">Tomas Omitidas</h4>
+                </div>
+                <div class="card-body">
+                    {% if tomas_omitidas %}
+                        <ul class="list-group">
+                            {% for toma in tomas_omitidas %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        ⏰ {{ toma.hora|time:"h:i A" }} - 💊 {{ toma.medicamento }} <span class="badge bg-danger ms-2">Omitida</span>
+                                    </div>
+                                    <form action="{% url 'marcar_toma' toma.id %}" method="POST" class="m-0">
+                                        {% csrf_token %}
+                                        <button class="btn btn-warning btn-sm" type="submit">✔ Marcar como tomada</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center text-muted">No hay tomas omitidas.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Imagen derecha -->
+        <div class="col-md-3 text-center">
+            <img src="{% static 'img/imagen.png' %}" alt="App de medicamentos" class="img-fluid mb-4" width="260">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+    function actualizarTomas() {
+        // Hacer una petición AJAX al servidor para obtener las tomas actualizadas
+        fetch('/actualizar_tomas/')
+            .then(response => response.text())
+            .then(html => {
+                // Reemplazar solo la sección de tomas pendientes en la página
+                document.getElementById('tomas-pendientes').innerHTML = html;
+            });
+    }
+
+    // Actualizar cada 60 segundos (60000 ms)
+    setInterval(actualizarTomas, 60000);
+</script>
