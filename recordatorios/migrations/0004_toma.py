@@ -4,20 +4,26 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recordatorios', '0003_rename_tittle_task_nombre_medicamento_and_more'),
+        ('recordatorios', '0003_rename_tittle_task_nombre_medicamento_and_more'), 
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Toma',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('hora', models.TimeField()),
-                ('dosis', models.IntegerField(default=1)),
-                ('medicamento', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tomas', to='recordatorios.task')),
-            ],
+        migrations.AddField(
+            model_name='toma',
+            name='nueva_hora',
+            field=models.DateTimeField(null=True),
+        ),
+        migrations.RemoveField(
+            model_name='toma',
+            name='hora',
+        ),
+        migrations.RenameField(
+            model_name='toma',
+            old_name='nueva_hora',
+            new_name='hora',
         ),
     ]
